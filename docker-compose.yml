@@ -4,27 +4,16 @@ services:
   neo4j:
     image: neo4j:5.26
     container_name: neo4j
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      - NEO4J_USER=${NEO4J_USER}
-      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      # Graphiti expects the standard NEO4J_* variables; translate them to
+      # Neo4j's expected format here. The password is pulled from .env.
+      - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-changeme123}
       - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-      - NEO4J_dbms_memory_heap_max__size=${NEO4J_HEAP_MAX:-1G}
-      - NEO4J_dbms_memory_heap_initial__size=${NEO4J_HEAP_INITIAL:-512M}
-    expose:
-      - "7474"  # HTTP Browser
-      - "7687"  # Bolt binary protocol
+    ports:
+      - "7687:7687"   # Bolt
+      - "7474:7474"   # HTTP UI
     volumes:
       - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/import
-      - neo4j_plugins:/plugins
-    ports:
-      - "7474:7474"
-      - "7473:7473"
-      - "7687:7687"
-
-volumes:
-  neo4j_data:
-  neo4j_logs:
-  neo4j_import:
-  neo4j_plugins: 
