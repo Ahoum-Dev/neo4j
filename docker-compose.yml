@@ -12,8 +12,10 @@ services:
       # Neo4j's expected format here. The password is pulled from .env.
       - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-changeme123}
       - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-    ports:
+    expose:
       - "7687:7687"   # Bolt
       - "7474:7474"   # HTTP UI
     volumes:
       - neo4j_data:/data
+volumes:
+  neo4j_data: 
